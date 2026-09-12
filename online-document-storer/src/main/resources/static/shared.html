@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Shared Documents</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-vault"></i><span>DocStorer</span><button class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button></div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="/documents.html" class="nav-item"><i class="fa-solid fa-file-alt"></i><span>My Documents</span></a>
+    <a href="/upload.html" class="nav-item"><i class="fa-solid fa-upload"></i><span>Upload</span></a>
+    <a href="/search.html" class="nav-item"><i class="fa-solid fa-search"></i><span>Search</span></a>
+    <a href="/folders.html" class="nav-item"><i class="fa-solid fa-folder"></i><span>Folders</span></a>
+    <a href="/shared.html" class="nav-item active"><i class="fa-solid fa-share-nodes"></i><span>Shared</span></a>
+    <a href="/profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profile</span></a>
+    <div class="nav-separator"></div>
+    <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+  </nav>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="main-content" id="mainContent">
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-actions" style="margin-left:auto">
+      <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <div class="avatar-menu" onclick="toggleAvatarMenu()"><div class="avatar" id="topAvatar">?</div><div class="avatar-dropdown" id="avatarDropdown"><a href="/profile.html"><i class="fa-solid fa-user"></i> Profile</a><hr/><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
+    </div>
+  </header>
+  <div class="page-body">
+    <div class="page-header"><div><h1 class="page-title">Shared Documents</h1><p class="page-subtitle">Documents you have shared with others</p></div></div>
+    <div id="sharedDocs" class="docs-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size:32px"></i>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  try {
+    const res = await api.get('/documents?page=0&size=50');
+    const all = res.data.content || [];
+    const shared = all.filter(d => d.isShared);
+    const container = document.getElementById('sharedDocs');
+    if (!shared.length) {
+      container.innerHTML = `<div style="grid-column:1/-1"><div class="empty-state"><i class="fa-solid fa-share-nodes" style="font-size:52px"></i><p>No shared documents yet.</p><a href="/documents.html" class="btn-primary" style="margin-top:16px;display:inline-flex">Go to Documents</a></div></div>`;
+      return;
+    }
+    container.innerHTML = shared.map(d => {
+      const fc = getFileClass(d.fileType), fi = getFileIcon(d.fileType);
+      return `<div class="doc-card">
+        <div class="doc-card-thumb ${fc}"><i class="fa-solid ${fi}"></i></div>
+        <div class="doc-card-body">
+          <div class="doc-card-name">${escHtml(d.originalName)}</div>
+          <div class="doc-card-meta"><span>${(d.fileType||'').toUpperCase()}</span><span>${d.fileSizeFormatted}</span></div>
+          <div class="doc-card-meta" style="margin-top:4px"><i class="fa-solid fa-link" style="color:var(--info)"></i> Shared link active</div>
+          <div class="doc-card-actions" style="margin-top:8px">
+            <button onclick="copyLink('${d.shareToken}')"><i class="fa-solid fa-copy"></i> Copy Link</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { toast(e.message,'error'); }
+});
+
+function copyLink(token) {
+  const link = `${location.origin}/api/documents/shared/${token}`;
+  navigator.clipboard.writeText(link).then(() => toast('Link copied!','success'));
+}
+function escHtml(str) { const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Folders</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-vault"></i><span>DocStorer</span><button class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button></div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="/documents.html" class="nav-item"><i class="fa-solid fa-file-alt"></i><span>My Documents</span></a>
+    <a href="/upload.html" class="nav-item"><i class="fa-solid fa-upload"></i><span>Upload</span></a>
+    <a href="/search.html" class="nav-item"><i class="fa-solid fa-search"></i><span>Search</span></a>
+    <a href="/folders.html" class="nav-item active"><i class="fa-solid fa-folder"></i><span>Folders</span></a>
+    <a href="/profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profile</span></a>
+    <div class="nav-separator"></div>
+    <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+  </nav>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="main-content" id="mainContent">
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-search"><i class="fa-solid fa-search"></i><input type="text" placeholder="Search..." id="quickSearch" onkeyup="quickSearchDocs(event)"/></div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <div class="avatar-menu" onclick="toggleAvatarMenu()"><div class="avatar" id="topAvatar">?</div><div class="avatar-dropdown" id="avatarDropdown"><a href="/profile.html"><i class="fa-solid fa-user"></i> Profile</a><hr/><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
+    </div>
+  </header>
+  <div class="page-body">
+    <div class="page-header">
+      <div><h1 class="page-title">Folders</h1><p class="page-subtitle">Organize your documents</p></div>
+      <button class="btn-primary" onclick="openModal('createFolderModal')"><i class="fa-solid fa-folder-plus"></i> New Folder</button>
+    </div>
+    <div id="foldersGrid" class="docs-grid"></div>
+  </div>
+</div>
+
+<!-- Create Folder Modal -->
+<div class="modal-overlay" id="createFolderModal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3 id="folderModalTitle">New Folder</h3><button onclick="closeModal('createFolderModal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Folder Name</label><input type="text" id="folderName" placeholder="e.g. Projects"/></div>
+      <div class="form-group"><label>Description</label><input type="text" id="folderDesc" placeholder="Optional description"/></div>
+      <div class="form-group"><label>Color</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <input type="color" id="folderColor" value="#6366f1" style="width:40px;height:36px;border-radius:8px;border:1px solid var(--border);cursor:pointer"/>
+          <span style="display:flex;gap:6px;align-items:center">
+            <button class="color-swatch" style="background:#6366f1" onclick="setFolderColor('#6366f1')"></button>
+            <button class="color-swatch" style="background:#10b981" onclick="setFolderColor('#10b981')"></button>
+            <button class="color-swatch" style="background:#f59e0b" onclick="setFolderColor('#f59e0b')"></button>
+            <button class="color-swatch" style="background:#ef4444" onclick="setFolderColor('#ef4444')"></button>
+            <button class="color-swatch" style="background:#3b82f6" onclick="setFolderColor('#3b82f6')"></button>
+            <button class="color-swatch" style="background:#8b5cf6" onclick="setFolderColor('#8b5cf6')"></button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('createFolderModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveFolder()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Folder Modal -->
+<div class="modal-overlay" id="deleteFolderModal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3>Delete Folder</h3><button onclick="closeModal('deleteFolderModal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body"><p>Delete folder <strong id="deleteFolderName"></strong>? Documents inside will be moved to root.</p></div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('deleteFolderModal')">Cancel</button>
+      <button class="btn-danger" onclick="confirmDeleteFolder()"><i class="fa-solid fa-trash"></i> Delete</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.folder-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; transition:var(--transition); cursor:pointer; }
+.folder-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.folder-icon { font-size:40px; margin-bottom:12px; }
+.folder-name { font-size:15px; font-weight:700; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.folder-meta { font-size:12px; color:var(--text-muted); }
+.folder-actions { display:flex; gap:6px; margin-top:12px; }
+.color-swatch { width:26px; height:26px; border-radius:6px; border:2px solid transparent; cursor:pointer; transition:.15s; }
+.color-swatch:hover { transform:scale(1.2); border-color:#fff; }
+</style>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="/js/app.js"></script>
+<script>
+let editingFolderId = null, deletingFolderId = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  loadFolders();
+});
+
+async function loadFolders() {
+  try {
+    const res = await api.get('/folders');
+    renderFolders(res.data || []);
+  } catch(e) { toast(e.message,'error'); }
+}
+
+function renderFolders(folders) {
+  const grid = document.getElementById('foldersGrid');
+  if (!folders.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1"><div class="empty-state"><i class="fa-solid fa-folder-open" style="font-size:60px"></i><p>No folders yet. Create one to organize your documents.</p><button class="btn-primary" style="margin-top:16px" onclick="openModal('createFolderModal')"><i class="fa-solid fa-folder-plus"></i> Create Folder</button></div></div>`;
+    return;
+  }
+  grid.innerHTML = folders.map(f => `
+    <div class="folder-card" onclick="window.location='/documents.html?folder=${f.id}'">
+      <div class="folder-icon"><i class="fa-solid fa-folder" style="color:${f.color||'#6366f1'}"></i></div>
+      <div class="folder-name">${escHtml(f.name)}</div>
+      <div class="folder-meta">${f.documentCount} document${f.documentCount!==1?'s':''}</div>
+      ${f.description?`<div class="folder-meta" style="margin-top:4px">${escHtml(f.description)}</div>`:''}
+      <div class="folder-actions">
+        <button class="btn-outline btn-sm" onclick="event.stopPropagation();openEditFolder(${f.id},'${escHtml(f.name)}','${escHtml(f.description||'')}','${f.color||'#6366f1'}')"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn-outline btn-sm" style="border-color:var(--danger);color:var(--danger)" onclick="event.stopPropagation();openDeleteFolder(${f.id},'${escHtml(f.name)}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function openEditFolder(id, name, desc, color) {
+  editingFolderId = id;
+  document.getElementById('folderModalTitle').textContent = 'Edit Folder';
+  document.getElementById('folderName').value = name;
+  document.getElementById('folderDesc').value = desc;
+  document.getElementById('folderColor').value = color;
+  openModal('createFolderModal');
+}
+
+function openDeleteFolder(id, name) {
+  deletingFolderId = id;
+  document.getElementById('deleteFolderName').textContent = name;
+  openModal('deleteFolderModal');
+}
+
+async function saveFolder() {
+  const name = document.getElementById('folderName').value.trim();
+  const description = document.getElementById('folderDesc').value.trim();
+  const color = document.getElementById('folderColor').value;
+  if (!name) { toast('Folder name required','warning'); return; }
+  try {
+    if (editingFolderId) {
+      await api.put('/folders/' + editingFolderId, { name, description, color });
+      toast('Folder updated','success');
+    } else {
+      await api.post('/folders', { name, description, color });
+      toast('Folder created','success');
+    }
+    closeModal('createFolderModal');
+    editingFolderId = null;
+    document.getElementById('folderModalTitle').textContent = 'New Folder';
+    document.getElementById('folderName').value = '';
+    document.getElementById('folderDesc').value = '';
+    loadFolders();
+  } catch(e) { toast(e.message,'error'); }
+}
+
+async function confirmDeleteFolder() {
+  if (!deletingFolderId) return;
+  try {
+    await api.delete('/folders/' + deletingFolderId);
+    closeModal('deleteFolderModal');
+    toast('Folder deleted','success');
+    loadFolders();
+  } catch(e) { toast(e.message,'error'); }
+}
+
+function setFolderColor(color) {
+  document.getElementById('folderColor').value = color;
+}
+
+function escHtml(str) { const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Activity Log</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-vault"></i><span>DocStorer</span><button class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button></div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="/documents.html" class="nav-item"><i class="fa-solid fa-file-alt"></i><span>My Documents</span></a>
+    <a href="/upload.html" class="nav-item"><i class="fa-solid fa-upload"></i><span>Upload</span></a>
+    <a href="/search.html" class="nav-item"><i class="fa-solid fa-search"></i><span>Search</span></a>
+    <a href="/folders.html" class="nav-item"><i class="fa-solid fa-folder"></i><span>Folders</span></a>
+    <a href="/activity.html" class="nav-item active"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></a>
+    <a href="/profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profile</span></a>
+    <div class="nav-separator"></div>
+    <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+  </nav>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="main-content" id="mainContent">
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-actions" style="margin-left:auto">
+      <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <div class="avatar-menu" onclick="toggleAvatarMenu()"><div class="avatar" id="topAvatar">?</div><div class="avatar-dropdown" id="avatarDropdown"><a href="/profile.html"><i class="fa-solid fa-user"></i> Profile</a><hr/><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
+    </div>
+  </header>
+  <div class="page-body">
+    <div class="page-header"><div><h1 class="page-title">Activity Log</h1><p class="page-subtitle">A complete history of your account actions</p></div></div>
+    <div class="card">
+      <table class="activity-table" id="activityTable">
+        <thead>
+          <tr><th>Action</th><th>Description</th><th>Date & Time</th><th>Status</th></tr>
+        </thead>
+        <tbody id="activityBody">
+          <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted)"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script src="/js/app.js"></script>
+<script>
+let actPage = 0;
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  loadActivities(0);
+});
+
+async function loadActivities(page) {
+  actPage = page;
+  try {
+    const res = await api.get(`/users/me/activities?page=${page}&size=20`);
+    const data = res.data;
+    renderActivities(data.content || []);
+    renderPagination(data.totalPages, page);
+  } catch(e) { toast(e.message,'error'); }
+}
+
+function renderActivities(acts) {
+  const tbody = document.getElementById('activityBody');
+  if (!acts.length) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted)">No activity found</td></tr>`; return; }
+  const actionClass = { UPLOAD_DOCUMENT:'action-upload', DOWNLOAD_DOCUMENT:'action-download', DELETE_DOCUMENT:'action-delete', LOGIN:'action-login', LOGOUT:'action-login', SHARE_DOCUMENT:'action-share', REGISTER:'action-login' };
+  tbody.innerHTML = acts.map(a => `
+    <tr>
+      <td><span class="action-badge ${actionClass[a.action]||'action-default'}">${a.action.replace(/_/g,' ')}</span></td>
+      <td>${escHtml(a.description || a.entityName || '—')}</td>
+      <td>${new Date(a.createdAt).toLocaleString()}</td>
+      <td><span style="color:${a.isSuccess?'var(--success)':'var(--danger)'}"><i class="fa-solid ${a.isSuccess?'fa-check':'fa-xmark'}"></i> ${a.isSuccess?'Success':'Failed'}</span></td>
+    </tr>`).join('');
+}
+
+function renderPagination(total, current) {
+  const el = document.getElementById('pagination');
+  if (!el || total <= 1) { if(el) el.innerHTML=''; return; }
+  let html = '';
+  if (current > 0) html += `<button onclick="loadActivities(${current-1})"><i class="fa-solid fa-chevron-left"></i></button>`;
+  for (let i=0; i<total; i++) html += `<button class="${i===current?'active':''}" onclick="loadActivities(${i})">${i+1}</button>`;
+  if (current < total-1) html += `<button onclick="loadActivities(${current+1})"><i class="fa-solid fa-chevron-right"></i></button>`;
+  el.innerHTML = html;
+}
+
+function escHtml(str) { const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Secure Cloud Document Storage</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  .landing { min-height:100vh; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); display:flex; flex-direction:column; }
+  .landing-nav { display:flex; align-items:center; justify-content:space-between; padding:20px 48px; }
+  .landing-logo { display:flex; align-items:center; gap:12px; color:#fff; font-size:22px; font-weight:700; }
+  .landing-logo i { font-size:26px; }
+  .landing-nav-links { display:flex; gap:12px; }
+  .landing-hero { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:60px 24px; color:#fff; }
+  .landing-hero h1 { font-size:clamp(36px,6vw,72px); font-weight:800; line-height:1.1; margin-bottom:20px; }
+  .landing-hero p { font-size:clamp(16px,2vw,20px); opacity:.9; max-width:600px; margin-bottom:40px; }
+  .hero-btns { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+  .btn-white { background:#fff; color:var(--primary); border:none; border-radius:12px; padding:14px 32px; font-size:16px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:all .2s; }
+  .btn-white:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.2); text-decoration:none; }
+  .btn-ghost { background:rgba(255,255,255,.15); color:#fff; border:2px solid rgba(255,255,255,.5); border-radius:12px; padding:14px 32px; font-size:16px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:all .2s; }
+  .btn-ghost:hover { background:rgba(255,255,255,.25); text-decoration:none; }
+  .features { background:#fff; padding:80px 24px; }
+  .features h2 { text-align:center; font-size:36px; font-weight:700; margin-bottom:12px; color:#0f172a; }
+  .features p { text-align:center; color:#64748b; margin-bottom:48px; }
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px; max-width:1200px; margin:0 auto; }
+  .feature-card { background:#f8fafc; border-radius:16px; padding:28px; border:1px solid #e2e8f0; }
+  .feature-icon { width:52px; height:52px; border-radius:12px; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; margin-bottom:16px; }
+  .feature-card h3 { font-size:18px; font-weight:700; margin-bottom:8px; color:#0f172a; }
+  .feature-card p { color:#64748b; font-size:14px; line-height:1.6; }
+  .cta { background:linear-gradient(135deg,#667eea,#764ba2); padding:80px 24px; text-align:center; color:#fff; }
+  .cta h2 { font-size:36px; font-weight:700; margin-bottom:12px; }
+  .cta p { opacity:.9; margin-bottom:32px; font-size:16px; }
+  footer { background:#0f0f17; color:#94a3b8; padding:24px 48px; display:flex; align-items:center; justify-content:space-between; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="landing">
+  <nav class="landing-nav">
+    <div class="landing-logo"><i class="fa-solid fa-vault"></i> DocStorer</div>
+    <div class="landing-nav-links">
+      <a href="/login.html" class="btn-ghost" style="padding:10px 22px;font-size:14px">Sign In</a>
+      <a href="/register.html" class="btn-white" style="padding:10px 22px;font-size:14px">Get Started</a>
+    </div>
+  </nav>
+  <div class="landing-hero">
+    <h1>Your Documents.<br/>Secure. Organized.<br/>Always Accessible.</h1>
+    <p>Industry-grade cloud document storage with encryption, version history, sharing, and powerful search — all in one place.</p>
+    <div class="hero-btns">
+      <a href="/register.html" class="btn-white"><i class="fa-solid fa-rocket"></i> Start Free</a>
+      <a href="/login.html" class="btn-ghost"><i class="fa-solid fa-sign-in-alt"></i> Sign In</a>
+    </div>
+  </div>
+</div>
+
+<section class="features">
+  <h2>Everything you need to manage documents</h2>
+  <p>A complete solution for individuals and teams</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div><h3>AES Encryption</h3><p>Files encrypted at rest with AES-256. Your data stays private and secure.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div><h3>Easy Upload</h3><p>Drag-and-drop upload with real-time progress. Supports PDF, Word, Excel, images and more.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-magnifying-glass"></i></div><h3>Powerful Search</h3><p>Find any document instantly. Search by name, type, category, date or tags.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-share-nodes"></i></div><h3>Secure Sharing</h3><p>Share documents with anyone via secure links. Control permissions and set expiry dates.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>Version History</h3><p>Every document version is saved. Restore any previous version with one click.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-folder-tree"></i></div><h3>Smart Folders</h3><p>Organize your files with nested folders and color-coded categories and tags.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div><h3>Analytics</h3><p>Track document views, downloads, storage usage and activity logs in real time.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-moon"></i></div><h3>Dark Mode</h3><p>Easy on the eyes. Switch between light and dark mode from your profile settings.</p></div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Ready to get started?</h2>
+  <p>Join thousands of users managing documents smarter with DocStorer.</p>
+  <a href="/register.html" class="btn-white"><i class="fa-solid fa-rocket"></i> Create Free Account</a>
+</section>
+
+<footer>
+  <div>© 2024 DocStorer. All rights reserved.</div>
+  <div>Built with Spring Boot + MySQL</div>
+</footer>
+<script>
+  if (localStorage.getItem('accessToken')) window.location.href = '/dashboard.html';
+</script>
+</body>
+</html>

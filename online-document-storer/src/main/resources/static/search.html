@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Search</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-vault"></i><span>DocStorer</span><button class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button></div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="/documents.html" class="nav-item"><i class="fa-solid fa-file-alt"></i><span>My Documents</span></a>
+    <a href="/upload.html" class="nav-item"><i class="fa-solid fa-upload"></i><span>Upload</span></a>
+    <a href="/search.html" class="nav-item active"><i class="fa-solid fa-search"></i><span>Search</span></a>
+    <a href="/folders.html" class="nav-item"><i class="fa-solid fa-folder"></i><span>Folders</span></a>
+    <a href="/profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profile</span></a>
+    <div class="nav-separator"></div>
+    <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+  </nav>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="main-content" id="mainContent">
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-actions" style="margin-left:auto">
+      <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <div class="avatar-menu" onclick="toggleAvatarMenu()"><div class="avatar" id="topAvatar">?</div><div class="avatar-dropdown" id="avatarDropdown"><a href="/profile.html"><i class="fa-solid fa-user"></i> Profile</a><hr/><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
+    </div>
+  </header>
+  <div class="page-body">
+    <div class="page-header">
+      <div><h1 class="page-title">Search Documents</h1><p class="page-subtitle">Find anything instantly</p></div>
+    </div>
+    <!-- Search Bar -->
+    <div class="card search-card">
+      <div class="big-search">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search by name, description, tag..." autofocus onkeyup="handleSearchKey(event)"/>
+        <button class="btn-primary" onclick="performSearch()">Search</button>
+      </div>
+      <!-- Advanced Filters -->
+      <div class="advanced-filters">
+        <button class="adv-toggle" onclick="toggleAdvanced()"><i class="fa-solid fa-sliders"></i> Advanced Filters <i class="fa-solid fa-chevron-down" id="advIcon"></i></button>
+        <div class="adv-body hidden" id="advBody">
+          <div class="adv-grid">
+            <div class="form-group">
+              <label>File Type</label>
+              <select id="filterType" class="select-input">
+                <option value="">All Types</option>
+                <option value="pdf">PDF</option>
+                <option value="docx">Word (DOCX)</option>
+                <option value="xlsx">Excel (XLSX)</option>
+                <option value="pptx">PowerPoint</option>
+                <option value="jpg">JPEG Image</option>
+                <option value="png">PNG Image</option>
+                <option value="txt">Text</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>From Date</label>
+              <input type="date" id="filterStart" class="select-input"/>
+            </div>
+            <div class="form-group">
+              <label>To Date</label>
+              <input type="date" id="filterEnd" class="select-input"/>
+            </div>
+          </div>
+          <button class="btn-outline" onclick="clearFilters()"><i class="fa-solid fa-xmark"></i> Clear Filters</button>
+        </div>
+      </div>
+    </div>
+    <!-- Results -->
+    <div id="searchStatus" class="search-status hidden"></div>
+    <div id="searchResults" class="docs-grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+</body>
+</html>

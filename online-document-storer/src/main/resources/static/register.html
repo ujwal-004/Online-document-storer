@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Register</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="auth-body">
+<div class="auth-bg">
+  <div class="auth-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="auth-card auth-card-wide">
+    <div class="auth-logo">
+      <i class="fa-solid fa-vault"></i>
+      <span>DocStorer</span>
+    </div>
+    <h2 class="auth-title">Create Account</h2>
+    <p class="auth-subtitle">Start storing securely today</p>
+    <div id="authAlert" class="alert hidden"></div>
+    <form id="registerForm" class="auth-form" novalidate>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="firstName" placeholder="John" required/>
+          <span class="field-error" id="firstNameErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lastName" placeholder="Doe" required/>
+          <span class="field-error" id="lastNameErr"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-at"></i> Username</label>
+        <input type="text" id="username" placeholder="johndoe123" required/>
+        <span class="field-error" id="usernameErr"></span>
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+        <input type="email" id="email" placeholder="john@example.com" required/>
+        <span class="field-error" id="emailErr"></span>
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-lock"></i> Password</label>
+        <div class="password-wrap">
+          <input type="password" id="password" placeholder="Min 8 chars, uppercase, lowercase, number" required/>
+          <button type="button" class="pw-toggle" onclick="togglePw('password','eyeReg')"><i class="fa-solid fa-eye" id="eyeReg"></i></button>
+        </div>
+        <div class="password-strength" id="pwStrength"></div>
+        <span class="field-error" id="pwErr"></span>
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-lock"></i> Confirm Password</label>
+        <div class="password-wrap">
+          <input type="password" id="confirmPassword" placeholder="Repeat password" required/>
+          <button type="button" class="pw-toggle" onclick="togglePw('confirmPassword','eyeConf')"><i class="fa-solid fa-eye" id="eyeConf"></i></button>
+        </div>
+        <span class="field-error" id="confirmErr"></span>
+      </div>
+      <label class="checkbox-label" style="margin-bottom:16px">
+        <input type="checkbox" id="agreeTerms" required/>
+        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+      </label>
+      <button type="submit" class="btn-primary btn-full" id="registerBtn">
+        <span class="btn-text">Create Account</span>
+        <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i></span>
+      </button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="/login.html">Sign in</a></p>
+  </div>
+</div>
+<script src="/js/app.js"></script>
+<script src="/js/auth.js"></script>
+</body>
+</html>

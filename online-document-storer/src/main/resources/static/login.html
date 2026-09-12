@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Login</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="auth-body">
+<div class="auth-bg">
+  <div class="auth-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <i class="fa-solid fa-vault"></i>
+      <span>DocStorer</span>
+    </div>
+    <h2 class="auth-title">Welcome back</h2>
+    <p class="auth-subtitle">Sign in to your account</p>
+    <div id="authAlert" class="alert hidden"></div>
+    <form id="loginForm" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="emailOrUsername"><i class="fa-solid fa-user"></i> Email or Username</label>
+        <input type="text" id="emailOrUsername" name="emailOrUsername" placeholder="you@example.com" autocomplete="username" required/>
+        <span class="field-error" id="emailErr"></span>
+      </div>
+      <div class="form-group">
+        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+        <div class="password-wrap">
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required/>
+          <button type="button" class="pw-toggle" onclick="togglePw('password','eyeLogin')"><i class="fa-solid fa-eye" id="eyeLogin"></i></button>
+        </div>
+        <span class="field-error" id="pwErr"></span>
+      </div>
+      <div class="form-row">
+        <label class="checkbox-label"><input type="checkbox" id="rememberMe"/> Remember me</label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn-primary btn-full" id="loginBtn">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i></span>
+      </button>
+    </form>
+    <p class="auth-switch">Don't have an account? <a href="/register.html">Create one</a></p>
+  </div>
+</div>
+<script src="/js/app.js"></script>
+<script src="/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — Dashboard</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <i class="fa-solid fa-vault"></i>
+    <span>DocStorer</span>
+    <button class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard.html" class="nav-item active"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="/documents.html" class="nav-item"><i class="fa-solid fa-file-alt"></i><span>My Documents</span></a>
+    <a href="/upload.html" class="nav-item"><i class="fa-solid fa-upload"></i><span>Upload</span></a>
+    <a href="/search.html" class="nav-item"><i class="fa-solid fa-search"></i><span>Search</span></a>
+    <a href="/folders.html" class="nav-item"><i class="fa-solid fa-folder"></i><span>Folders</span></a>
+    <a href="/shared.html" class="nav-item"><i class="fa-solid fa-share-nodes"></i><span>Shared</span></a>
+    <a href="/activity.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></a>
+    <a href="/profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profile</span></a>
+    <div class="nav-separator"></div>
+    <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+  </nav>
+  <div class="sidebar-storage">
+    <div class="storage-label"><i class="fa-solid fa-database"></i> Storage</div>
+    <div class="storage-bar"><div class="storage-fill" id="sideStorageFill" style="width:0%"></div></div>
+    <div class="storage-text" id="sideStorageText">Loading...</div>
+  </div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- MAIN -->
+<div class="main-content" id="mainContent">
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-search">
+      <i class="fa-solid fa-search"></i>
+      <input type="text" placeholder="Quick search..." id="quickSearch" onkeyup="quickSearchDocs(event)"/>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Toggle dark mode"><i class="fa-solid fa-circle-half-stroke" id="themeIcon"></i></button>
+      <button class="icon-btn" title="Notifications" onclick="toggleNotifications()"><i class="fa-solid fa-bell"></i><span class="badge" id="notifBadge" style="display:none">0</span></button>
+      <div class="avatar-menu" onclick="toggleAvatarMenu()">
+        <div class="avatar" id="topAvatar">?</div>
+        <div class="avatar-dropdown" id="avatarDropdown">
+          <div class="avatar-info" id="avatarInfo">Loading...</div>
+          <a href="/profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+          <a href="/profile.html#settings"><i class="fa-solid fa-gear"></i> Settings</a>
+          <hr/>
+          <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-body">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title" id="welcomeMsg">Good morning 👋</h1>
+        <p class="page-subtitle">Here's what's happening with your documents today.</p>
+      </div>
+      <a href="/upload.html" class="btn-primary"><i class="fa-solid fa-plus"></i> Upload Document</a>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card stat-blue">
+        <div class="stat-icon"><i class="fa-solid fa-file-alt"></i></div>
+        <div class="stat-body">
+          <div class="stat-value" id="statDocs">—</div>
+          <div class="stat-label">Total Documents</div>
+        </div>
+      </div>
+      <div class="stat-card stat-purple">
+        <div class="stat-icon"><i class="fa-solid fa-database"></i></div>
+        <div class="stat-body">
+          <div class="stat-value" id="statStorage">—</div>
+          <div class="stat-label">Storage Used</div>
+        </div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+        <div class="stat-body">
+          <div class="stat-value" id="statFolders">—</div>
+          <div class="stat-label">Folders</div>
+        </div>
+      </div>
+      <div class="stat-card stat-orange">
+        <div class="stat-icon"><i class="fa-solid fa-share-nodes"></i></div>
+        <div class="stat-body">
+          <div class="stat-value" id="statShared">—</div>
+          <div class="stat-label">Shared</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Storage Usage Bar -->
+    <div class="card storage-card">
+      <div class="card-header"><h3><i class="fa-solid fa-hard-drive"></i> Storage Usage</h3></div>
+      <div class="storage-details">
+        <span id="storageUsed">—</span> of <span id="storageLimit">5 GB</span> used
+        <span class="storage-pct" id="storagePct">—%</span>
+      </div>
+      <div class="storage-bar-lg"><div class="storage-fill-lg" id="storageFill" style="width:0%"></div></div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Recent Documents -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-clock"></i> Recent Documents</h3>
+          <a href="/documents.html" class="card-link">View all</a>
+        </div>
+        <div id="recentDocsList" class="doc-list">
+          <div class="empty-state"><i class="fa-solid fa-file-circle-plus"></i><p>No documents yet</p></div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-timeline"></i> Recent Activity</h3>
+          <a href="/activity.html" class="card-link">View all</a>
+        </div>
+        <div id="activityList" class="activity-list">
+          <div class="empty-state"><i class="fa-solid fa-chart-line"></i><p>No activity yet</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document Types Chart -->
+    <div class="card" style="margin-top:24px">
+      <div class="card-header"><h3><i class="fa-solid fa-chart-pie"></i> Documents by Type</h3></div>
+      <div id="docTypesChart" class="doc-types-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header"><h4>Notifications</h4><button onclick="toggleNotifications()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="notif-list" id="notifList"><p class="notif-empty">No new notifications</p></div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

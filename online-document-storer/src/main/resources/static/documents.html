@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocStorer — My Documents</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-vault"></i><span>DocStorer</span><button class="sidebar-close" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button></div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="/documents.html" class="nav-item active"><i class="fa-solid fa-file-alt"></i><span>My Documents</span></a>
+    <a href="/upload.html" class="nav-item"><i class="fa-solid fa-upload"></i><span>Upload</span></a>
+    <a href="/search.html" class="nav-item"><i class="fa-solid fa-search"></i><span>Search</span></a>
+    <a href="/folders.html" class="nav-item"><i class="fa-solid fa-folder"></i><span>Folders</span></a>
+    <a href="/shared.html" class="nav-item"><i class="fa-solid fa-share-nodes"></i><span>Shared</span></a>
+    <a href="/activity.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></a>
+    <a href="/profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profile</span></a>
+    <div class="nav-separator"></div>
+    <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+  </nav>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="main-content" id="mainContent">
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-search"><i class="fa-solid fa-search"></i><input type="text" placeholder="Search documents..." id="quickSearch" onkeyup="quickSearchDocs(event)"/></div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <div class="avatar-menu" onclick="toggleAvatarMenu()"><div class="avatar" id="topAvatar">?</div><div class="avatar-dropdown" id="avatarDropdown"><a href="/profile.html"><i class="fa-solid fa-user"></i> Profile</a><hr/><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
+    </div>
+  </header>
+  <div class="page-body">
+    <div class="page-header">
+      <div><h1 class="page-title">My Documents</h1><p class="page-subtitle">Manage all your files</p></div>
+      <a href="/upload.html" class="btn-primary"><i class="fa-solid fa-plus"></i> Upload</a>
+    </div>
+    <!-- Toolbar -->
+    <div class="docs-toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterByType('all', this)">All</button>
+        <button class="filter-tab" onclick="filterByType('pdf', this)">PDF</button>
+        <button class="filter-tab" onclick="filterByType('docx', this)">Word</button>
+        <button class="filter-tab" onclick="filterByType('xlsx', this)">Excel</button>
+        <button class="filter-tab" onclick="filterByType('jpg', this)">Images</button>
+        <button class="filter-tab" onclick="filterByType('pptx', this)">PPT</button>
+      </div>
+      <div class="toolbar-right">
+        <select id="sortSelect" onchange="sortDocs(this.value)" class="select-input">
+          <option value="createdAt,desc">Newest First</option>
+          <option value="createdAt,asc">Oldest First</option>
+          <option value="originalName,asc">Name A-Z</option>
+          <option value="originalName,desc">Name Z-A</option>
+          <option value="fileSize,desc">Largest First</option>
+        </select>
+        <button class="icon-btn" onclick="setView('grid')" id="gridViewBtn" title="Grid view"><i class="fa-solid fa-grid-2"></i></button>
+        <button class="icon-btn" onclick="setView('list')" id="listViewBtn" title="List view"><i class="fa-solid fa-list"></i></button>
+      </div>
+    </div>
+    <!-- Document Grid/List -->
+    <div id="docsContainer" class="docs-grid"></div>
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+<!-- Document Detail Modal -->
+<div class="modal-overlay" id="docModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="modalDocName">Document</h3>
+      <button onclick="closeModal('docModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modalDocBody"></div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('docModal')">Close</button>
+      <button class="btn-primary" id="modalDownloadBtn"><i class="fa-solid fa-download"></i> Download</button>
+    </div>
+  </div>
+</div>
+<!-- Share Modal -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Share Document</h3><button onclick="closeModal('shareModal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Share with (email)</label><input type="email" id="shareEmail" placeholder="user@example.com"/></div>
+      <div class="form-group"><label>Permission</label><select id="sharePermission" class="select-input"><option value="VIEW">View only</option><option value="DOWNLOAD">View & Download</option><option value="EDIT">Edit</option></select></div>
+      <div class="form-group"><label>Expiry date (optional)</label><input type="datetime-local" id="shareExpiry"/></div>
+      <div class="share-link-box hidden" id="shareLinkBox">
+        <label>Share Link</label>
+        <div class="copy-field"><input type="text" id="shareLink" readonly/><button onclick="copyShareLink()"><i class="fa-solid fa-copy"></i></button></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('shareModal')">Cancel</button>
+      <button class="btn-primary" onclick="submitShare()"><i class="fa-solid fa-share-nodes"></i> Share</button>
+    </div>
+  </div>
+</div>
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3>Delete Document</h3><button onclick="closeModal('deleteModal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body"><p>Are you sure you want to delete <strong id="deleteDocName"></strong>? This action cannot be undone.</p></div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn-danger" onclick="confirmDelete()"><i class="fa-solid fa-trash"></i> Delete</button>
+    </div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script src="/js/app.js"></script>
+<script src="/js/documents.js"></script>
+</body>
+</html>
