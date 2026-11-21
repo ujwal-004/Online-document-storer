@@ -26,10 +26,10 @@ public class DataInitializer {
     @Value("${app.file.upload-dir}")
     private String uploadDir;
 
-    @Value("${app.admin.email}")
+    @Value("${app.admin.email:}")
     private String adminEmail;
 
-    @Value("${app.admin.password}")
+    @Value("${app.admin.password:}")
     private String adminPassword;
 
     @Value("${app.admin.name}")
@@ -54,13 +54,24 @@ public class DataInitializer {
                 log.error("Could not create upload directory: {}", e.getMessage());
             }
 
-            // Create default admin if not exists
-            if (!userRepository.existsByEmail(adminEmail)) {
+            // Seed an initial administrator only when both values are configured.
+            if (adminEmail == null || adminEmail.isBlank()
+                    || adminPassword == null || adminPassword.isBlank()) {
+                log.warn("No admin account was seeded. Set ADMIN_EMAIL and ADMIN_PASSWORD before first deployment.");
+                return;
+            }
+            if (adminPassword.length() < 12
+                    || adminPassword.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72) {
+                throw new IllegalStateException("ADMIN_PASSWORD must be 12–72 UTF-8 bytes.");
+            }
+
+            String normalizedEmail = adminEmail.trim().toLowerCase(java.util.Locale.ROOT);
+            if (!userRepository.existsByEmail(normalizedEmail)) {
                 User admin = User.builder()
                         .username("admin")
-                        .email(adminEmail)
+                        .email(normalizedEmail)
                         .password(passwordEncoder.encode(adminPassword))
-                        .firstName("System")
+                        .firstName(adminName == null || adminName.isBlank() ? "System" : adminName)
                         .lastName("Administrator")
                         .role(User.Role.ADMIN)
                         .isActive(true)
@@ -68,7 +79,7 @@ public class DataInitializer {
                         .storageLimit(Long.MAX_VALUE)
                         .build();
                 userRepository.save(admin);
-                log.info("Default admin created: {}", adminEmail);
+                log.info("Initial administrator account created from environment settings: {}", normalizedEmail);
             }
         };
     }
