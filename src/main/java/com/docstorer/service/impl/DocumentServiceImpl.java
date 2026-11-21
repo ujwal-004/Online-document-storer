@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,10 +36,16 @@ public class DocumentServiceImpl implements DocumentService {
     private final ActivityLogRepository activityLogRepository;
     private final FileStorageUtil fileStorageUtil;
 
+    @Value("${app.encryption.enabled:false}")
+    private boolean encryptionEnabled;
+
     @Override
     @Transactional
     public DocumentResponse uploadDocument(MultipartFile file, DocumentUploadRequest req, String userEmail) {
         User user = getUser(userEmail);
+        if (req.isEncrypt() && !encryptionEnabled) {
+            throw new IllegalArgumentException("Encrypted storage is disabled. Set APP_ENCRYPTION_ENABLED=true and configure ENCRYPTION_KEY to enable it.");
+        }
         String checksum = fileStorageUtil.computeChecksum(file);
         String filePath = req.isEncrypt()
                 ? fileStorageUtil.storeEncryptedFile(file, "documents")
