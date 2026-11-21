@@ -3,6 +3,7 @@ package com.docstorer.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +27,23 @@ public class JwtTokenProvider {
 
     @Value("${app.jwt.refresh-expiration}")
     private long refreshExpiration;
+
+    private byte[] signingKeyBytes;
+
+    @PostConstruct
+    public void validateSecret() {
+        if (jwtSecret == null || jwtSecret.isBlank()) {
+            throw new IllegalStateException("JWT_SECRET is required. Generate a Base64-encoded random key of at least 32 bytes.");
+        }
+        try {
+            signingKeyBytes = Decoders.BASE64.decode(jwtSecret);
+        } catch (RuntimeException exception) {
+            throw new IllegalStateException("JWT_SECRET must be valid Base64.", exception);
+        }
+        if (signingKeyBytes.length < 32) {
+            throw new IllegalStateException("JWT_SECRET must decode to at least 32 bytes for HS256.");
+        }
+    }
 
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails, jwtExpiration);
@@ -76,8 +94,7 @@ public class JwtTokenProvider {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(signingKeyBytes);
     }
 
     public long getExpirationTime() {
